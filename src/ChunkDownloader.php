@@ -2,8 +2,9 @@
 
 
 namespace DownloadBooster;
-use Requests;
 
+use Requests;
+use Requests_Response;
 
 /**
  * Class ChunkDownloader
@@ -16,6 +17,9 @@ use Requests;
  */
 class ChunkDownloader extends \Thread
 {
+    /** @var int The expected HTTP status code returned for partial content */
+    const PARTIAL_CONTENT_STATUS_CODE = 206;
+
     /** @var string */
     private $url;
 
@@ -37,6 +41,7 @@ class ChunkDownloader extends \Thread
      */
     public function __construct(string $url, int $chunkStart, int $chunkSize = 262144)
     {
+        // Guard clauses are implemented to protect against bad args
         if ($this->chunkStart < 0) {
             throw new \InvalidArgumentException('chunkSize of ${chunkSize} is not valid. Must be >= 0.');
         }
@@ -58,13 +63,19 @@ class ChunkDownloader extends \Thread
     public function run(): void
     {
         $response = $this->requestChunk();
-        if ($response->status_code === 206) {
+        if ($response->status_code === self::PARTIAL_CONTENT_STATUS_CODE) {
             $this->data = $response->body;
         }
     }
 
-    private function requestChunk()
+    /**
+     * Create and fire a request to get a single chunk
+     *
+     * @return Requests_Response
+     */
+    private function requestChunk(): Requests_Response
     {
+        // Header will look like "bytes=0-1023"
         $byteRange = 'bytes=' . (string) $this->chunkStart . '-' . (string) ($this->chunkSize - $this->chunkStart - 1);
         $headers = [
             'Range' => $byteRange
