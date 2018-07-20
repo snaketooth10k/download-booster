@@ -1,0 +1,20 @@
+{
+    "name": "snaketooth10k/download-booster",
+    "type": "library",
+    "license": "ISC",
+    "authors": [
+        {
+            "name": "William Reynolds",
+            "email": "williamareynolds@icloud.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "rmccue/requests": "^1.7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DownloadBooster\\": "src/"
+        }
+    }
+}
