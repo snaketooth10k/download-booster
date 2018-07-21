@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
 
-namespace DownloadBooster;
+namespace DownloadBooster\ChunkDownloader;
 
 use Requests;
 use Requests_Response;
 
 /**
- * Class ChunkDownloader
+ * Class ChunkDownloaderParallel
  *
  * This class represents the task of downloading an assigned chunk to memory. It extends the Thread class so it can act
  * in parallel with other ChunkDownloaders if implemented. Note that the attribute "data" is used instead of "chunk"
@@ -15,7 +15,7 @@ use Requests_Response;
  *
  * @package DownloadBooster
  */
-class ChunkDownloader extends \Thread
+class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterface
 {
     /** @var int The expected HTTP status code returned for partial content */
     const PARTIAL_CONTENT_STATUS_CODE = 206;
@@ -33,7 +33,7 @@ class ChunkDownloader extends \Thread
     private $data;
 
     /**
-     * ChunkDownloader constructor
+     * ChunkDownloaderParallel constructor
      *
      * @param string $url
      * @param int $chunkStart The first byte of the chunk
@@ -66,6 +66,16 @@ class ChunkDownloader extends \Thread
         if ($response->status_code === self::PARTIAL_CONTENT_STATUS_CODE) {
             $this->data = $response->body;
         }
+    }
+
+    /**
+     * Return the body of the request
+     *
+     * @return string
+     */
+    public function getData(): string
+    {
+        return $this->data;
     }
 
     /**
