@@ -3,6 +3,7 @@
 
 namespace DownloadBooster\ChunkDownloader;
 
+
 use Requests;
 use Requests_Response;
 
@@ -37,11 +38,10 @@ class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterfac
      *
      * @param string $url
      * @param int $chunkStart The first byte of the chunk
-     * @param int $chunkSize Defaults to 1/4 of 4 MiB
+     * @param int $chunkSize
      */
-    public function __construct(string $url, int $chunkStart, int $chunkSize = 262144)
+    public function __construct(string $url, int $chunkStart, int $chunkSize)
     {
-        // Guard clauses are implemented to protect against bad args
         if ($this->chunkStart < 0) {
             throw new \InvalidArgumentException('chunkSize of ${chunkSize} is not valid. Must be >= 0.');
         }
