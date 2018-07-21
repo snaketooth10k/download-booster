@@ -72,6 +72,11 @@ class DownloadBooster
         return false;
     }
 
+    public function getData(): string
+    {
+        return $this->data;
+    }
+
     /**
      * Creates and runs tasks
      *

@@ -63,10 +63,7 @@ class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterfac
      */
     public function run(): void
     {
-        $response = $this->requestChunk();
-        if ($response->status_code === self::PARTIAL_CONTENT_STATUS_CODE) {
-            $this->data = $response->body;
-        }
+        $this->requestChunk();
     }
 
     /**
@@ -82,16 +79,42 @@ class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterfac
     /**
      * Create and fire a request to get a single chunk
      *
-     * @return Requests_Response
+     * @throws \Exception
      */
-    private function requestChunk(): Requests_Response
+    private function requestChunk(): void
     {
-        // Header will look like "bytes=0-1023"
-        $byteRange = 'bytes=' . (string) $this->chunkStart . '-' . (string) ($this->chunkSize - $this->chunkStart - 1);
-        $headers = [
-            'Range' => $byteRange
-        ];
+        $request = $this->createRequest();
 
-        return Requests::get($this->url, $headers);
+        $data = curl_exec($request);
+
+        $responseStatusCode = curl_getinfo($request)['http_code'];
+
+        if ($responseStatusCode === self::PARTIAL_CONTENT_STATUS_CODE) {
+            $this->data = $data;
+        } else {
+            throw new \Exception('Invalid response from server.');
+        }
+    }
+
+    /**
+     * Create the cURL resource and set options
+     *
+     * @return resource
+     * @throws \Exception
+     */
+    private function createRequest()
+    {
+        if (!$request = curl_init($this->url)) {
+            throw new \Exception('A cURL object could not be created.');
+        }
+        $chunkEnd = $this->chunkSize + $this->chunkStart - 1;
+        $byteRange = (string)$this->chunkStart . '-' . (string)$chunkEnd;
+
+        curl_setopt_array($request, [
+            CURLOPT_RANGE => $byteRange,
+            CURLOPT_RETURNTRANSFER => 1,
+
+        ]);
+        return $request;
     }
 }
