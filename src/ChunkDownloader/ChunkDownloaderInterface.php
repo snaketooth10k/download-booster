@@ -22,12 +22,12 @@ interface ChunkDownloaderInterface
      * Due to a change in typehint handling in php7.1, TYPE $var = null now resolves to ?TYPE $var = null in the
      * interpreter, which results in a mismatch of Thread::start and interface. An issue will be opened against pthreads
      * for a fix to this issue. This method must still be implemented, but due to the experimental nature of these
-     * libraries, a proper interface cannot currently be provided.
+     * libraries, a proper interface cannot currently be provided. For now, the function will be wrapped.
      *
-     * @param int $options
+     * @param int|null $options
      * @return bool
      */
-//    public function start(int $options = null);
+    public function start($options = 0): bool;
 
     /**
      * Join the subthread back to the caller

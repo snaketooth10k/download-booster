@@ -60,10 +60,23 @@ class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterfac
 
     /**
      * Fires when the newly spawned thread is opened after calling start()
+     *
+     * @throws \Exception
      */
     public function run(): void
     {
         $this->requestChunk();
+    }
+
+    /**
+     * A wrapper to provide proper typehinting for the interface
+     *
+     * @param int|null $options
+     * @return bool
+     */
+    public function start($options = 0): bool
+    {
+        return parent::start($options);
     }
 
     /**
