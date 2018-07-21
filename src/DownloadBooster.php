@@ -105,6 +105,7 @@ class DownloadBooster
         $startingByte = 0;
 
         foreach ($tasks as &$task) {
+            /** @var ChunkDownloaderInterface $task */
             $task = new $this->chunkDownloaderClass($this->url, $startingByte, $this->chunkSize);
             $startingByte += $this->chunkSize;
 
@@ -146,6 +147,8 @@ class DownloadBooster
         }
 
         $this->data = implode('', $data);
+
+        return true;
     }
 
     /**
@@ -157,7 +160,7 @@ class DownloadBooster
      * @param string|null $chunkDownloaderClass
      * @throws \InvalidArgumentException
      */
-    private function setChunkDownloaderClass(string $chunkDownloaderClass): void
+    private function setChunkDownloaderClass(?string $chunkDownloaderClass): void
     {
         if (empty($chunkDownloaderClass)) {
             $this->chunkDownloaderClass = ChunkDownloaderParallel::class;
