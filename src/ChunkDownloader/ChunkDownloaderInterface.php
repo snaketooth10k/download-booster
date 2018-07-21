@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 
 namespace DownloadBooster\ChunkDownloader;
@@ -19,13 +19,15 @@ interface ChunkDownloaderInterface
     /**
      * Carry out the chunk download
      *
-     * Since PHP doesn't support parallelism out-of-the-box, this interface guarantees that a non-parallel
-     * ChunkDownloaderParallel can be swapped in if necessary.
+     * Due to a change in typehint handling in php7.1, TYPE $var = null now resolves to ?TYPE $var = null in the
+     * interpreter, which results in a mismatch of Thread::start and interface. An issue will be opened against pthreads
+     * for a fix to this issue. This method must still be implemented, but due to the experimental nature of these
+     * libraries, a proper interface cannot currently be provided.
      *
      * @param int $options
      * @return bool
      */
-    public function start($options = 0);
+//    public function start(int $options = null);
 
     /**
      * Join the subthread back to the caller
