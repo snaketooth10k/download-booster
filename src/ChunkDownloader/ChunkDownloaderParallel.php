@@ -39,6 +39,7 @@ class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterfac
      * @param string $url
      * @param int $chunkStart The first byte of the chunk
      * @param int $chunkSize
+     * @throws \InvalidArgumentException
      */
     public function __construct(string $url, int $chunkStart, int $chunkSize)
     {

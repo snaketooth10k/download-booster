@@ -40,6 +40,7 @@ class DownloadBooster
      * @param int $chunkCount The number of chunks to get
      * @param int $chunkSize The size, in bytes, of each chunk. Defaults to 1/4 of 4 MiB.
      * @param string|null $chunkDownloaderClass The fully qualified class name of a ChunkDownloader
+     * @throws \InvalidArgumentException
      */
     public function __construct(
         string $url,
@@ -55,19 +56,7 @@ class DownloadBooster
         $this->url = $url;
         $this->chunkCount = $chunkCount;
         $this->chunkSize = $chunkSize;
-        if (empty($chunkDownloaderClass)) {
-            $this->chunkDownloaderClass = ChunkDownloaderParallel::class;
-        }
-
-        // Check manually provided ChunkDownloaders for interface compliance
-        if (new $chunkDownloaderClass('http://ietf.org', $chunkCount, $chunkSize) instanceof ChunkDownloaderInterface) {
-            $this->chunkDownloaderClass = $chunkDownloaderClass;
-        } else {
-            throw new \InvalidArgumentException(
-                'The class "${chunkDownloaderClass}" must implement '
-                . 'DownloadBooster\ChunkDownloader\ChunkDownloaderInterface.');
-        }
-
+        $this->setChunkDownloaderClass($chunkDownloaderClass);
     }
 
     /**
@@ -157,5 +146,30 @@ class DownloadBooster
         }
 
         $this->data = implode('', $data);
+    }
+
+    /**
+     * Provide the class for ChunkDownloader creation
+     *
+     * Creates an instance of a provided custom class by instantiating it and ensuring it implements the
+     * ChunkDownloaderInterface.
+     *
+     * @param string|null $chunkDownloaderClass
+     * @throws \InvalidArgumentException
+     */
+    private function setChunkDownloaderClass(string $chunkDownloaderClass): void
+    {
+        if (empty($chunkDownloaderClass)) {
+            $this->chunkDownloaderClass = ChunkDownloaderParallel::class;
+
+        } else if (new $chunkDownloaderClass('http://ietf.org', 1, 1) instanceof ChunkDownloaderInterface) {
+            // Check manually provided ChunkDownloaders for interface compliance
+            $this->chunkDownloaderClass = $chunkDownloaderClass;
+
+        } else {
+            throw new \InvalidArgumentException(
+                'The class "${chunkDownloaderClass}" must implement '
+                . 'DownloadBooster\ChunkDownloader\ChunkDownloaderInterface.');
+        }
     }
 }
