@@ -105,6 +105,7 @@ class DownloadBooster
         $startingByte = 0;
 
         foreach ($tasks as &$task) {
+            /** @var ChunkDownloaderInterface $task */
             $task = new $this->chunkDownloaderClass($this->url, $startingByte, $this->chunkSize);
             $startingByte += $this->chunkSize;
 
