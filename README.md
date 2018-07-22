@@ -13,6 +13,8 @@ One MiB (Mebibyte) is equal to 1,048,576 bytes.
 
 The library is provided via the DownloadBooster namespace.
 
+The CLI support library is provided via the DownloadBoosterCLI namespace.
+
 ## GetOpt Library
 
 The GetOpt library is in use to improve support of command line argument handling. PHP's native getopt function is
@@ -47,9 +49,9 @@ use with HHVM in a webserver setting.
 download-booster-cli.php provides the library functionality to the command line. Helpful setup steps:
 
 ```bash
-chmod +x ./src/download-booster-cli.php
+chmod +x ./bin/download-booster-cli.php
 
-ln -s ./src/download-booster-cli.php /usr/local/bin/download-booster
+ln -s ./bin/download-booster-cli.php /usr/local/bin/download-booster
 
 download-booster --help
 ```

@@ -14,7 +14,8 @@
     },
     "autoload": {
         "psr-4": {
-            "DownloadBooster\\": "src/"
+            "DownloadBooster\\": "src/",
+            "DownloadBoosterCLI\\": "bin/lib/"
         }
     },
     "require-dev": {
