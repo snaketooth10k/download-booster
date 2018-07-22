@@ -19,19 +19,19 @@ class DownloadBoosterTest extends TestCase
         $booster = new DownloadBooster(self::$url);
         $this->assertInstanceOf(DownloadBooster::class, $booster);
 
-        $booster = new DownloadBooster(self::$url, 1, 100);
+        $booster = new DownloadBooster(self::$url, MockChunkDownloader::class, 1, 100);
         $this->assertInstanceOf(DownloadBooster::class, $booster);
 
         $booster = new DownloadBooster('notawebsite');
         $this->expectException(InvalidArgumentException::class);
 
-        $booster = new DownloadBooster(self::$url, -5);
+        $booster = new DownloadBooster(self::$url, MockChunkDownloader::class, -5);
         $this->expectException(InvalidArgumentException::class);
     }
 
     public function testDownload()
     {
-        $booster = new DownloadBooster(self::$url, 4, 1, MockChunkDownloader::class);
+        $booster = new DownloadBooster(self::$url, MockChunkDownloader::class, 4, 1);
         $result = $booster->download();
 
         $this->assertInternalType('bool', $result);

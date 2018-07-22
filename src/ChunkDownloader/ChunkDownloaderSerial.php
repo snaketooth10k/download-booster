@@ -4,19 +4,7 @@
 namespace DownloadBooster\ChunkDownloader;
 
 
-use Requests;
-use Requests_Response;
-
-/**
- * Class ChunkDownloaderParallel
- *
- * This class represents the task of downloading an assigned chunk to memory. It extends the Thread class so it can act
- * in parallel with other ChunkDownloaders if implemented. Note that the attribute "data" is used instead of "chunk"
- * because we don't wished to confuse this with the \Threaded::chunk() method.
- *
- * @package DownloadBooster
- */
-class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterface
+class ChunkDownloaderSerial implements ChunkDownloaderInterface
 {
     /** @var int The expected HTTP status code returned for partial content */
     const PARTIAL_CONTENT_STATUS_CODE = 206;
@@ -57,30 +45,35 @@ class ChunkDownloaderParallel extends \Thread implements ChunkDownloaderInterfac
         $this->chunkStart = $chunkStart;
         $this->chunkSize = $chunkSize;
     }
-
     /**
-     * Fires when the newly spawned thread is opened after calling start()
+     * Carry out the chunk download
      *
-     * @throws \Exception
-     */
-    public function run(): void
-    {
-        $this->requestChunk();
-    }
-
-    /**
-     * A wrapper to provide proper typehinting for the interface
+     * This class downloads in serial, so start will run the download.
      *
      * @param int|null $options
      * @return bool
+     * @throws \Exception
      */
     public function start($options = 0): bool
     {
-        return parent::start($options);
+        $this->requestChunk();
+        return true;
     }
 
     /**
-     * Return the body of the request
+     * Join the subthread back to the caller
+     *
+     * This method must return true if the ChunkDownloader does not process in parallel
+     *
+     * @return bool
+     */
+    public function join()
+    {
+        return true;
+    }
+
+    /**
+     * Get the data downloaded from the server
      *
      * @return string
      */
