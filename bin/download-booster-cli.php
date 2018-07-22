@@ -42,6 +42,19 @@ $chunkCount = (int)$getOpt->getOption('chunk-count');
 $chunkSize = (int)$getOpt->getOption('chunk-size');
 
 
+// Use the last part of the URL as file name if not provided
+if (empty($fileName)) {
+    $urlParts = explode('/', $url);
+    $fileName = array_pop($urlParts);
+}
+
+
+// Guard against overwriting files, more semantically pleasing than mode x
+if (file_exists($fileName)) {
+    echo "The file ${fileName} already exists." . PHP_EOL;
+    exit;
+}
+
 // Download and store file
 $downloadStrategy = $parallel ? ChunkDownloaderParallel::class : ChunkDownloaderSerial::class;
 $downloader = new DownloadBooster($url, $downloadStrategy, $chunkCount, $chunkSize);
@@ -57,17 +70,6 @@ try {
     exit;
 }
 
-if (empty($fileName)) {
-    $urlParts = explode('/', $url);
-    $fileName = array_pop($urlParts);
-}
-
-
-// Guard against overwriting files, more semantically pleasing than mode x
-if (file_exists($fileName)) {
-    echo "The file ${fileName} already exists." . PHP_EOL;
-    exit;
-}
 if ($file = fopen($fileName, 'w')) {
     fwrite($file, $downloader->getData());
     fclose($file);
