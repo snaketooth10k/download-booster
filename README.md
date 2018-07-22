@@ -88,6 +88,4 @@ In order to use the parallel option (-p, --parallel), you must be running thread
 
 - Implement a Factory to provide the appropriate ChunkDownloader to the DownloadBooster
 
-- Implement a builder for the $getOpt object in the CLI
-
 - Add system/acceptance testing
