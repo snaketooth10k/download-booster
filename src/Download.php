@@ -23,7 +23,7 @@ class Download
      * @param int|null $chunkCount
      * @param int|null $chunkSize
      */
-    public function __construct(?string $url, ?int $chunkCount, ?int $chunkSize)
+    public function __construct(?string $url = null, ?int $chunkCount = null, ?int $chunkSize = null)
     {
         $this->setURL($url)
             ->setChunkCount($chunkCount)
@@ -34,7 +34,7 @@ class Download
      * @param string $url
      * @return Download
      */
-    public function setURL(string $url): Download
+    public function setURL(?string $url): Download
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             throw new \InvalidArgumentException("The url '${url}' appears to be invalid.");
@@ -47,7 +47,7 @@ class Download
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getURL(): string
     {
         return $this->url;
     }
@@ -101,16 +101,17 @@ class Download
      *
      * To prevent accidental overwrites, the data prop can only be set once, and cannot be set from the constructor.
      *
-     * @param mixed $data
-     * @return void
+     * @param string $data
+     * @return Download
      */
-    public function setData(string $data): void
+    public function setData($data): Download
     {
         if (!is_null($this->data)) {
             throw new \LogicException('Data for a download should only be set once. Data already set.');
         }
 
         $this->data = $data;
+        return $this;
     }
 
     /**
