@@ -2,16 +2,14 @@
 <?php declare(strict_types=1);
 
 
-use DownloadBooster\ChunkDownloader\ChunkDownloaderParallel;
-use DownloadBooster\ChunkDownloader\ChunkDownloaderSerial;
 use DownloadBooster\DownloadBooster;
-use DownloadBoosterCLI\CreateGetOpt;
+use DownloadBoosterCLI\GetOptUtility;
 
 
 require __DIR__ . '/../vendor/autoload.php';
 
 
-$getOpt = CreateGetOpt::createGetOpt();
+$getOpt = GetOptUtility::createGetOpt();
 
 // Parse arguments passed from CLI
 try {
@@ -56,11 +54,11 @@ if (file_exists($fileName)) {
 }
 
 // Download and store file
-$downloadStrategy = $parallel ? ChunkDownloaderParallel::class : ChunkDownloaderSerial::class;
-$downloader = new DownloadBooster($url, $downloadStrategy, $chunkCount, $chunkSize);
+$downloadStrategy = $parallel ? 'ParallelDownloader' : 'SerialDownloader';
+$downloader = new DownloadBooster($downloadStrategy, $url, $chunkCount, $chunkSize);
 
 try {
-    $downloader->download();
+    $data = $downloader->getRemoteContent();
 } catch (InvalidArgumentException $exception) {
     echo $exception->getMessage() . PHP_EOL;
     echo $getOpt->getHelpText();
@@ -71,7 +69,7 @@ try {
 }
 
 if ($file = fopen($fileName, 'w')) {
-    fwrite($file, $downloader->getData());
+    fwrite($file, $data);
     fclose($file);
     echo "File ${fileName} written" . PHP_EOL;
     exit;
