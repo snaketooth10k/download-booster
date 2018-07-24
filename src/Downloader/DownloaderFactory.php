@@ -15,6 +15,7 @@ use DownloadBooster\Download;
 class DownloaderFactory
 {
     /**
+     * @static
      * @param string $class The class to use to instantiate a Downloader object
      * @param Download $download
      * @return DownloaderInterface
@@ -25,9 +26,6 @@ class DownloaderFactory
 
         if ($class == 'paralleldownloader') {
             return new ParallelDownloader($download);
-        }
-        if ($class == 'mockdownloader') {
-            return new MockDownloader($download);
         }
         if ($class == 'serialdownloader') {
             return new SerialDownloader($download);

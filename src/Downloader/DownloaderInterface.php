@@ -9,8 +9,8 @@ use DownloadBooster\Download;
 /**
  * Interface DownloaderInterface
  * 
- * A Downloader represents a strategy for downloading a remote file. DownloadBooster requires that the
- * Downloader used implements this interface.
+ * A Downloader represents a strategy for downloading a remote file. The DownloadBooster Facade requires a class that
+ * implements this interface and is constructed via DownloaderFactory.
  *
  * @package DownloadBooster\Downloader
  */

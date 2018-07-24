@@ -99,7 +99,8 @@ class Download
     /**
      * Stores the downloaded data
      *
-     * To prevent accidental overwrites, the data prop can only be set once, and cannot be set from the constructor.
+     * To prevent accidental requests, the data property can only be set once, and cannot be set from the constructor.
+     * This method must remain fluent to work around a mutability issue that occurs during parallel operation.
      *
      * @param string $data
      * @return Download

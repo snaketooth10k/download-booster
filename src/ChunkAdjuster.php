@@ -7,7 +7,7 @@ namespace DownloadBooster;
 /**
  * Class ChunkAdjuster
  *
- * Provides utility for checking and adjusting chunk size and count.
+ * Provides utilities for handling chunk size, count and range.
  *
  * @package DownloadBooster
  */
@@ -16,6 +16,10 @@ class ChunkAdjuster
     /**
      * Changes the chunk size or count to effectively download the remote file
      *
+     * If a chunk is outside of the range of the remote file, no content will be returned. This is not exactly a
+     * problem in terms of the received content, but creates unnecessary overhead.
+     *
+     * @static
      * @param Download $download
      * @throws \Exception
      * @return Download
@@ -55,6 +59,7 @@ class ChunkAdjuster
      * array methods (array_merge) can reset integer keys to 0, 1, 2 ..., but it doesn't seem like there would be a good
      * reason to merge multiple ranges, and this is semantically pleasing and intuitive.
      *
+     * @static
      * @param Download $download
      * @return int[]
      */
@@ -77,6 +82,11 @@ class ChunkAdjuster
     /**
      * Send a HEAD request to get the remote file size
      *
+     * This is a fast and effective way to get the total size of the remote file. Since the request only returns the
+     * headers for the response, it creates slight HTTP overhead with the benefit of knowing that the chunk ranges will
+     * be correct.
+     *
+     * @static
      * @param Download $download
      * @throws \Exception
      * @return int|null The size of the remote file, null if response did not include content-length
@@ -104,6 +114,7 @@ class ChunkAdjuster
     /**
      * Return the product of the chunk count and chunk size
      *
+     * @static
      * @param Download $download
      * @return int The number of bytes that will be requested from the remote server
      */

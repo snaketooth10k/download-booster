@@ -15,6 +15,7 @@ class GetOptUtility
      * This method exists purely to keep this logic out of the CLI Script, which is much easier to read without this
      * logic in it. This code is so self-documented that any further indirection seems unnecessary.
      *
+     * @static
      * @return GetOpt
      */
     public static function createGetOpt(): GetOpt

@@ -4,6 +4,13 @@
 namespace DownloadBooster\Downloader\DownloadChunk;
 
 
+/**
+ * Interface DownloadChunkInterface
+ *
+ * Represent a method for downloading a chunk from some remote (or local) resource
+ *
+ * @package DownloadBooster\Downloader\DownloadChunk
+ */
 interface DownloadChunkInterface
 {
     /**

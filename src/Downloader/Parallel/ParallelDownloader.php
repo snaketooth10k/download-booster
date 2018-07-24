@@ -26,8 +26,6 @@ class ParallelDownloader extends \Thread implements DownloaderInterface
     private $downloadThreads;
 
     /**
-     * ParallelDownloader constructor
-     *
      * @param Download $download
      */
     public function __construct(Download $download)
@@ -54,7 +52,7 @@ class ParallelDownloader extends \Thread implements DownloaderInterface
     }
 
     /**
-     * Generate download chunks using chunk count and size
+     * Generate download chunks
      */
     private function createChunks(): void
     {
@@ -72,7 +70,7 @@ class ParallelDownloader extends \Thread implements DownloaderInterface
     }
 
     /**
-     * Run each chunk's download
+     * Download each chunk
      */
     private function executeChunkDownloads(): void
     {

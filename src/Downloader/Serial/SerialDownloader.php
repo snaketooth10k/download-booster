@@ -30,8 +30,6 @@ class SerialDownloader implements DownloaderInterface
     private $downloadChunks;
 
     /**
-     * SerialDownloader constructor
-     *
      * @param Download $download
      */
     public function __construct(Download $download)
