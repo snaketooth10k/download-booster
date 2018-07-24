@@ -3,13 +3,13 @@
 
 
 use DownloadBooster\DownloadBooster;
-use DownloadBoosterCLI\CreateGetOpt;
+use DownloadBoosterCLI\GetOptUtility;
 
 
 require __DIR__ . '/../vendor/autoload.php';
 
 
-$getOpt = CreateGetOpt::createGetOpt();
+$getOpt = GetOptUtility::createGetOpt();
 
 // Parse arguments passed from CLI
 try {
