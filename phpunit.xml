@@ -18,8 +18,11 @@
 >
 
     <testsuites>
-        <testsuite name="AllTests">
+        <testsuite name="All">
             <directory>Tests/</directory>
+        </testsuite>
+        <testsuite name="Functional">
+            <directory>Tests/Functional/</directory>
         </testsuite>
     </testsuites>
 
