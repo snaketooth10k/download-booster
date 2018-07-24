@@ -11,7 +11,7 @@ interface DownloadChunkInterface
      * @param int $lowByteOffset
      * @param int $highByteOffset
      */
-    public function construct(string $url, int $lowByteOffset, int $highByteOffset);
+    public function __construct(string $url, int $lowByteOffset, int $highByteOffset);
 
     /**
      * Perform the chunk download task.

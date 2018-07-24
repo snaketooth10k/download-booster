@@ -33,7 +33,7 @@ class CurlDownloadChunk implements DownloadChunkInterface
      * @param int $lowByteOffset
      * @param int $highByteOffset
      */
-    public function construct(string $url, int $lowByteOffset, int $highByteOffset)
+    public function __construct(string $url, int $lowByteOffset, int $highByteOffset)
     {
         $this->url = $url;
         $this->lowByteOffset = $lowByteOffset;
