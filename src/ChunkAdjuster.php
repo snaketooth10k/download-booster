@@ -48,6 +48,33 @@ class ChunkAdjuster
     }
 
     /**
+     * Generate the offset range for a set of chunks
+     *
+     * Each key is a low offset which refers to the high offset as the value. This could be refactored to return an
+     * array of "tuples". Since PHP offers no immutable tuple object, either is fine. The danger here is that certain
+     * array methods (array_merge) can reset integer keys to 0, 1, 2 ..., but it doesn't seem like there would be a good
+     * reason to merge multiple ranges, and this is semantically pleasing and intuitive.
+     *
+     * @param Download $download
+     * @return int[]
+     */
+    public static function createChunkRanges(Download $download): array
+    {
+        $chunkSize = $download->getChunkSize();
+        $currentOffset = 0;
+
+        for ($i = 0; $i < $download->getChunkCount(); $i++) {
+            $lowOffset = $currentOffset;
+            $highOffset = $currentOffset + $chunkSize - 1;
+            $currentOffset = $currentOffset + $chunkSize;
+
+            $ranges[$lowOffset] = $highOffset;
+        }
+
+        return $ranges;
+    }
+
+    /**
      * Send a HEAD request to get the remote file size
      *
      * @param Download $download
@@ -56,7 +83,7 @@ class ChunkAdjuster
      */
     private static function getRemoteFileSize(Download $download):? int
     {
-        $head = curl_init($download->getUrl());
+        $head = curl_init($download->getURL());
 
         //Create a "HEAD" request
         curl_setopt_array($head, [
@@ -67,14 +94,11 @@ class ChunkAdjuster
             CURLOPT_TIMEOUT => 6
         ]);
 
-        if (!$result = curl_exec($head)) {
-            throw new \Exception('Could not connect to url.');
-        }
-        if (preg_match('/content-length: (\d+)/i', $result, $matches)) {
-            return (int) $matches[1];
+        if ($result = curl_exec($head)) {
+            return curl_getinfo($head, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
         }
 
-        return null;
+        throw new \Exception('Could not get remote content length.');
     }
 
     /**
