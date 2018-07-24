@@ -7,7 +7,7 @@ namespace DownloadBoosterCLI;
 use GetOpt\GetOpt;
 use GetOpt\Option;
 
-class CreateGetOpt
+class GetOptUtility
 {
     /**
      * Build a GetOpt instance for the CLI
