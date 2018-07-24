@@ -2,7 +2,7 @@
 
 Download Booster downloads the first 4 MiB of the specified URL to the current directory. It downloads the file in 
 chunks, stitches the chunks back together, and writes them to disk. It should be noted that this library cannot be used
-in a webserver environment. If that functionality is needed, HHVM/AMPHP should be used and a suitable ChunkDownloader
+in a webserver environment. If that functionality is needed, HHVM/AMPHP should be used and a suitable Downloader
 will need to be implemented.
 
 ## Definitions

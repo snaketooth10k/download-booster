@@ -1,0 +1,132 @@
+<?php declare(strict_types=1);
+
+
+namespace DownloadBooster;
+
+
+/**
+ * Class ChunkAdjuster
+ *
+ * Provides utilities for handling chunk size, count and range.
+ *
+ * @package DownloadBooster
+ */
+class ChunkAdjuster
+{
+    /**
+     * Changes the chunk size or count to effectively download the remote file
+     *
+     * If a chunk is outside of the range of the remote file, no content will be returned. This is not exactly a
+     * problem in terms of the received content, but creates unnecessary overhead.
+     *
+     * @static
+     * @param Download $download
+     * @throws \Exception
+     * @return Download
+     */
+    public static function adjustChunking(Download $download): Download
+    {
+        $remoteFileSize = self::getRemoteFileSize($download);
+        $chunkCount = $download->getChunkCount();
+
+        if (empty($remoteFileSize)) {
+            echo "Could not check remote file size." . PHP_EOL;
+            return $download;
+        }
+
+        // If the chunk count is larger than the file size, we probably only need one chunk
+        if ($remoteFileSize <= $chunkCount) {
+            $download->setChunkCount(1);
+            return $download;
+        }
+
+        $downloadSize = self::getDownloadSize($download);
+
+        // HTTP GET will handle a range that starts inside the Acceptable-Range and extends beyond it.
+        if ($downloadSize > $remoteFileSize) {
+            $maxChunkSize = (int) ceil($remoteFileSize / $chunkCount);
+            $download->setChunkSize($maxChunkSize);
+        }
+
+        return $download;
+    }
+
+    /**
+     * Generate the offset range for a set of chunks
+     *
+     * Each key is a low offset which refers to the high offset as the value. This could be refactored to return an
+     * array of "tuples". Since PHP offers no immutable tuple object, either is fine. The danger here is that certain
+     * array methods (array_merge) can reset integer keys to 0, 1, 2 ..., but it doesn't seem like there would be a good
+     * reason to merge multiple ranges, and this is semantically pleasing and intuitive.
+     *
+     * @static
+     * @param Download $download
+     * @return int[]
+     */
+    public static function createChunkRanges(Download $download): array
+    {
+        $chunkSize = $download->getChunkSize();
+        $currentOffset = 0;
+
+        for ($i = 0; $i < $download->getChunkCount(); $i++) {
+            $lowOffset = $currentOffset;
+            $highOffset = $currentOffset + $chunkSize - 1;
+            $currentOffset = $currentOffset + $chunkSize;
+
+            $ranges[$lowOffset] = $highOffset;
+        }
+
+        return $ranges;
+    }
+
+    /**
+     * Send a HEAD request to get the remote file size
+     *
+     * This is a fast and effective way to get the total size of the remote file. Since the request only returns the
+     * headers for the response, it creates slight HTTP overhead with the benefit of knowing that the chunk ranges will
+     * be correct.
+     *
+     * @static
+     * @param Download $download
+     * @throws \Exception
+     * @return int|null The size of the remote file, null if response did not include content-length
+     */
+    private static function getRemoteFileSize(Download $download):? int
+    {
+        $head = curl_init($download->getURL());
+
+        //Create a "HEAD" request
+        curl_setopt_array($head, [
+            CURLOPT_NOBODY => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 6
+        ]);
+
+        if ($result = curl_exec($head)) {
+            return curl_getinfo($head, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+        }
+
+        throw new \Exception('Could not get remote content length.');
+    }
+
+    /**
+     * Return the product of the chunk count and chunk size
+     *
+     * @static
+     * @param Download $download
+     * @return int The number of bytes that will be requested from the remote server
+     */
+    private static function getDownloadSize(Download $download): int
+    {
+        return $download->getChunkCount() * $download->getChunkSize();
+    }
+
+    /**
+     * Do not instantiate this class.
+     */
+    private function __construct()
+    {
+    }
+}
